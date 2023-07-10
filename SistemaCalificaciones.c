@@ -206,3 +206,125 @@ void ProcesarEstudiante(const char* linea, const int i) {
 
 }
 
+int MenuPrincipal() {
+
+    int menu, flag = 1;
+
+    printf("Seleccione una opción\n");
+    printf("1. Ingreso de datos de estudiantes\n2. Modificar datos de estudiantes\n3. Ver Datos de estudiantes\n4. Promedio de estudiante\n5. Salir\n");
+    scanf_s("%d", &menu);
+
+
+    switch (menu)
+    {
+        case 1:
+            IngresoEstudiantes(&n_alumnosTotal);
+            break;
+
+        case 2:
+            ReemplazoDatos();
+            break;
+
+        case 3:
+            VerDatosEstudiantes();
+            break;
+
+        case 4:
+            Promedios();
+            break;
+
+        case 5:
+            flag = 0;
+            break;
+
+    default:
+        break;
+    }
+
+
+    return flag;
+}
+
+void Promedios()
+{
+    int flagReporte = 0;
+
+    float promedio = 0.0f;
+    float promedioGen = 0.0f;
+    float promedioGenA = 0.0f;
+    float promedioProgA = 0.0f;
+
+    float* promedioM = calloc(n_materiasTotal, sizeof(float));
+    float* promedioP = calloc(n_progresosTotal, sizeof(float));
+
+
+    system("cls");
+    for (int i = 0; i < n_alumnosTotal; i++)
+    {
+        promedio = 0.0f;
+        promedioGenA = 0.0f;
+        printf("Promedios del alumno %d. %s\n", i + 1, alumnos[i].nombre);
+        printf("Promedio del alumno en cada materia:\n");
+        for (int j = 0; j < n_materiasTotal; j++)
+        {
+            promedio = 0.0f;
+            for (int k = 0; k < n_progresosTotal; k++)
+            {
+                promedio = promedio + alumnos[i].promedios[j][k];
+                promedioGen = promedioGen + alumnos[i].promedios[j][k];
+                promedioGenA = promedioGenA + alumnos[i].promedios[j][k];
+                promedioM[j] = promedioM[j] + alumnos[i].promedios[j][k];
+                promedioP[k] = promedioP[k] + alumnos[i].promedios[j][k];
+            }
+            printf("Promedio de materia %d: %f\n", j + 1, promedio / n_progresosTotal);
+        }
+        promedioProgA = 0.0f;
+        for (int j = 0; j < n_progresosTotal; j++)
+        {
+            promedioProgA = 0.0f;
+            for (int k = 0; k < n_materiasTotal; k++)
+            {
+                promedioProgA = promedioProgA + alumnos[i].promedios[k][j];
+            }
+            printf("Promedio de progreso %d: %f\n", j + 1, promedioProgA / n_materiasTotal);
+        }
+        printf("Promedio general del alumno es: %f", promedioGenA / (n_materiasTotal*n_progresosTotal));
+        printf("\n");
+    }
+
+    printf("Promedio general del curso %f\n", promedioGen / ((n_materiasTotal * n_progresosTotal) * n_alumnosTotal));
+
+    for (int mat = 0; mat < n_materiasTotal; mat++)
+    {
+        printf("Promedio general de materia %d es: %f\n", mat + 1, (promedioM[mat] / (n_progresosTotal * n_alumnosTotal)));
+    }
+    for (int prog = 0; prog < n_progresosTotal; prog++)
+    {
+        printf("Promedio general de progreso %d es: %f\n", prog + 1, (promedioP[prog] / (n_materiasTotal * n_alumnosTotal)));
+    }
+
+    printf("Desea hacer un reporte? (1. Si - Otro numero. No)");
+
+    scanf_s("%d", &flagReporte);
+
+    if (flagReporte == 1)
+    {
+        FILE* reporte;
+        errno_t resultado = fopen_s(&reporte, "Reporte.csv", "w+");
+        fprintf(reporte, "Promedio general del curso %f\n", promedioGen / ((n_materiasTotal * n_progresosTotal) * n_alumnosTotal));
+        for (int mat = 0; mat < n_materiasTotal; mat++)
+        {
+            fprintf(reporte, "Promedio general de materia %d es: %f\n", mat + 1, (promedioM[mat] / (n_progresosTotal * n_alumnosTotal)));
+        }
+        for (int prog = 0; prog < n_progresosTotal; prog++)
+        {
+            fprintf(reporte, "Promedio general de progreso %d es: %f\n", prog + 1, (promedioP[prog] / (n_materiasTotal * n_alumnosTotal)));
+        }
+        int error = fclose(reporte);
+    } 
+
+    free(promedioM);
+    free(promedioP);
+}
+
+
