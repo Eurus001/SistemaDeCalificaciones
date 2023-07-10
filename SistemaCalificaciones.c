@@ -427,3 +427,128 @@ void VerDatosEstudiantes()
     printf("\n");
 }
 
+
+void EscribirDatosAlumnos()
+{
+    for (int i = 0; i < n_alumnosTotal; i++)
+    {
+        fprintf(archivo,"%s;%s;%d;", alumnos[i].horaMod, alumnos[i].nombre, alumnos[i].edad);
+        for (int j = 0; j < n_materiasTotal; j++)
+        {
+            for (int k = 0; k < n_progresosTotal; k++)
+            {
+                fprintf(archivo,"%f;", alumnos[i].promedios[j][k]);
+            }
+        }
+        fprintf(archivo, "-1;\n");
+    }
+}
+
+void ReemplazoDatos()
+{
+    char* hora = NULL;
+    int i, edad;
+    char nombre[30];
+
+    printf("Ingrese el numero del alumno del que desea cambiar los datos (Del 1 al %d)\n", n_alumnosTotal);
+    scanf_s("%d", &i);
+
+    i--;
+
+    while (i > n_alumnosTotal) {
+        i = 0;
+        printf("Ingrese el numero del alumno del que desea cambiar los datos (Del 1 al %d)\n", n_alumnosTotal);
+        scanf_s("%d", &i);
+        i--;
+    }
+
+    //Ingreso fecha y hora modificacion
+    hora = FechayHora();
+    if (hora == NULL) {
+        printf("Error fecha\n");
+    }
+    else {
+        strcpy_s(alumnos[i].horaMod, sizeof(alumnos[i].horaMod), hora);;
+    }
+
+    //Ingreso de nombre
+    printf("Ingrese el nombre del estudiante: ");
+    scanf_s("%s", nombre, 30);
+    alumnos[i].nombre = _strdup(nombre);
+
+    //Ingreso de edad
+    printf("Ingrese la edad del estudiante: ");
+    scanf_s("%d", &edad);
+    alumnos[i].edad = edad;
+
+
+    AsignacionMemoriaPromedios(i, IngresoCalificaciones());
+
+    free(hora);
+    ResetArchivo();
+    ModificarMetadatos();
+    EscribirDatosAlumnos();
+}
+
+void ResetArchivo()
+{
+    fclose(archivo);
+    errno_t resultado = fopen_s(&archivo, "Datos.csv", "w+");
+}
+
+void IngresoEstudiantes() {
+    //Cadena para fecha y hora
+    char* hora = NULL;
+    int n_alumnosnuevos, edad;
+    char nombre[30];
+
+    //Pedir ingreso de numeros de alumnos nuevos que quiere ingresar
+    printf("Especifique el numero de estudiantes que desea ingresar\n");
+    scanf_s("%d", &n_alumnosnuevos);
+
+    n_alumnosTotal = n_alumnosTotal + n_alumnosnuevos;
+
+    alumnos = (struct Alumno*)realloc(alumnos ,n_alumnosnuevos * sizeof(struct Alumno));
+    if (alumnos == NULL)
+    {
+        printf("Error al redimensionar memoria\n");
+    }
+    else
+    {
+        printf("Exito al redimensionar memoria");
+        //ModificarMetadato(n_alumnosTotal, 2);
+        system("cls");
+    }
+
+    for (int i = (n_alumnosTotal - n_alumnosnuevos); i < n_alumnosTotal; i++)
+    {
+        //Fecha y Hora de ingreso entran al archivo y al struct
+        hora = FechayHora();
+        if (hora == NULL) {
+            printf("Error fecha\n");
+        }
+        else {
+            strcpy_s(alumnos[i].horaMod, sizeof(alumnos[i].horaMod), hora);;
+        }
+
+        //Ingreso de nombre
+        printf("Ingrese el nombre del estudiante: ");
+        scanf_s("%s", nombre, 30);
+        alumnos[i].nombre = _strdup(nombre);
+
+        //Ingreso de edad
+        printf("Ingrese la edad del estudiante: ");
+        scanf_s("%d", &edad);
+        alumnos[i].edad = edad;
+        
+
+        AsignacionMemoriaPromedios(i, IngresoCalificaciones());
+
+        free(hora);
+    }
+
+    ResetArchivo();
+    ModificarMetadatos();
+    EscribirDatosAlumnos();
+
+}
