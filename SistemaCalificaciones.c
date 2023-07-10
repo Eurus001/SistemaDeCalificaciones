@@ -328,3 +328,102 @@ void Promedios()
 }
 
 
+
+char* FechayHora() {
+
+    //Setear la fecha y hora para ponerlas en el archivo
+    time_t t = time(NULL);
+    memset(&tiempoactual, 0, sizeof(struct tm));
+    errno_t fechaerror = localtime_s(&tiempoactual, &t);
+    char* fechayhorai;
+
+    fechayhorai = (char*)malloc(21 * sizeof(char));
+    if (fechayhorai == NULL)
+    {
+        printf("Error al asignar memoria");
+    }
+    else
+    {
+        printf("Exito al asignar memoria");
+        system("cls");
+    }
+
+    if (fechaerror == 0) {
+        strftime(fechayhorai, 20, "%Y-%m-%dT%H:%M:%S", &tiempoactual);
+    }
+    else {
+        printf("Error al obtener la fecha local.\n");
+        free(fechayhorai);
+        return NULL;
+    }
+    return fechayhorai;
+}
+
+
+float** IngresoCalificaciones()
+{
+    float** promediosmaterias = (float**)malloc(n_materiasTotal * sizeof(float*));
+    if (promediosmaterias == NULL) {
+        printf("Error al asignar memoria\n");
+        return NULL;
+    }
+
+    for (int i = 0; i < n_materiasTotal; i++)
+    {
+        promediosmaterias[i] = (float*)malloc(n_progresosTotal * sizeof(float));
+        if (promediosmaterias[i] == NULL)
+        {
+            printf("Error al asignar memoria\n");
+            // Free previously allocated memory
+            for (int j = 0; j < i; j++)
+                free(promediosmaterias[j]);
+            free(promediosmaterias);
+            return NULL;
+        }
+        else
+        {
+            // Ingreso Calificaciones
+            for (int k = 0; k < n_progresosTotal; k++)
+            {
+                printf("Ingrese la calificacion de la materia %d durante el progreso %d: \n", i + 1, k + 1);
+                scanf_s("%f", &promediosmaterias[i][k]);
+            }
+        }
+    }
+    return promediosmaterias;
+}
+
+
+void AsignacionMemoriaPromedios(const int i, float** calificaciones)
+{
+    alumnos[i].promedios = calificaciones;
+
+    for (int j = 0; j < n_materiasTotal; j++)
+    {
+        for (int k = 0; k < n_progresosTotal; k++)
+        {
+            fprintf(archivo ,"%f;", alumnos[i].promedios[j][k]);
+        }
+    }
+    fprintf(archivo, "-1;\n");
+}
+
+void VerDatosEstudiantes()
+{
+    for (int i = 0; i < n_alumnosTotal; i++)
+    {
+        printf("Estudiante %d:\nNombre: %s\nEdad: %d\n", i + 1, alumnos[i].nombre, alumnos[i].edad);
+        for (int j = 0; j < n_materiasTotal; j++)
+        {
+            printf("\tCalificacion materia %d\n", j + 1);
+            for (int k = 0; k < n_progresosTotal; k++)
+            {
+                printf("Progreso %d: %f\t", k+1, alumnos[i].promedios[j][k]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
