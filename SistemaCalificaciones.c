@@ -23,7 +23,7 @@ struct Alumno* alumnos;
 //Archivo principal
 FILE* archivo;
 
-//Declaraci�n de funciones
+//Declaración de funciones
 void MenuInicial();
 void ModificarMetadatos();
 void CargaDeDatos();
@@ -45,7 +45,7 @@ int n_alumnosTotal = 0, n_materiasTotal = 0, n_progresosTotal = 0;
 //main
 int main()
 {
-    //Consola en espa�ol
+    //Consola en español
     setlocale(LC_ALL, "es_ES");
 
     //Variables
@@ -94,6 +94,7 @@ void MenuInicial() {
     printf("%d\n",n_progresosTotal);
     ModificarMetadatos();
     fprintf_s(archivo, "\n");
+    system("cls");
 }
 
 //Modifica los metadatos de la base de datos (primera linea)
@@ -206,6 +207,7 @@ void ProcesarEstudiante(const char* linea, const int i) {
 
 }
 
+
 int MenuPrincipal() {
 
     int menu, flag = 1;
@@ -264,7 +266,6 @@ void Promedios()
         promedio = 0.0f;
         promedioGenA = 0.0f;
         printf("Promedios del alumno %d. %s\n", i + 1, alumnos[i].nombre);
-        printf("Promedio del alumno en cada materia:\n");
         for (int j = 0; j < n_materiasTotal; j++)
         {
             promedio = 0.0f;
@@ -289,7 +290,7 @@ void Promedios()
             printf("Promedio de progreso %d: %f\n", j + 1, promedioProgA / n_materiasTotal);
         }
         printf("Promedio general del alumno es: %f", promedioGenA / (n_materiasTotal*n_progresosTotal));
-        printf("\n");
+        printf("\n\n");
     }
 
     printf("Promedio general del curso %f\n", promedioGen / ((n_materiasTotal * n_progresosTotal) * n_alumnosTotal));
@@ -303,7 +304,7 @@ void Promedios()
         printf("Promedio general de progreso %d es: %f\n", prog + 1, (promedioP[prog] / (n_materiasTotal * n_alumnosTotal)));
     }
 
-    printf("Desea hacer un reporte? (1. Si - Otro numero. No)");
+    printf("Desea hacer un reporte? (1. Si - Otro numero. No)\n");
 
     scanf_s("%d", &flagReporte);
 
@@ -321,6 +322,7 @@ void Promedios()
             fprintf(reporte, "Promedio general de progreso %d es: %f\n", prog + 1, (promedioP[prog] / (n_materiasTotal * n_alumnosTotal)));
         }
         int error = fclose(reporte);
+        printf("Reporte creado con éxito\n");
     } 
 
     free(promedioM);
@@ -426,7 +428,6 @@ void VerDatosEstudiantes()
     }
     printf("\n");
 }
-
 
 void EscribirDatosAlumnos()
 {
@@ -550,5 +551,4 @@ void IngresoEstudiantes() {
     ResetArchivo();
     ModificarMetadatos();
     EscribirDatosAlumnos();
-
 }
